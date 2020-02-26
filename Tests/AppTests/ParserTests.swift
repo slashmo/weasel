@@ -24,25 +24,37 @@ final class ParserTests: XCTestCase {
 	}
 
 	func testFlatMapForwardsTheParsedResultToTheGivenParser() {
-		var falseStr = "0"[...]
-		var trueStr = "1"[...]
-
 		let intToBool = int.flatMap { $0 == 0 ? always(false) : always(true) }
 
-		XCTAssertEqual(intToBool.run(&falseStr), false)
-		XCTAssertEqual(intToBool.run(&trueStr), true)
+		let falseResult = intToBool.run("0")
+		XCTAssertEqual(falseResult.match, false)
+		XCTAssertTrue(falseResult.rest.isEmpty)
 
-		XCTAssertTrue(falseStr.isEmpty)
-		XCTAssertTrue(trueStr.isEmpty)
+		let trueResult = intToBool.run("1")
+		XCTAssertEqual(trueResult.match, true)
+		XCTAssertTrue(trueResult.rest.isEmpty)
 	}
 
 	func testFlatMapUndosTheOuterMutationIfTheInnerParserFails() {
-		var str = "1a"[...]
-		let result: Void? = int
-			.flatMap { _ in .never }
-			.run(&str)
+		let result = int
+			.flatMap { _ in Parser<Never>.never }
+			.run("1a")
 
-		XCTAssertNil(result)
-		XCTAssertEqual(str, "1a")
+		XCTAssertNil(result.match)
+		XCTAssertEqual(result.rest, "1a")
+	}
+
+	func testOneOfReturnsTheFirstMatch() {
+		let result = oneOf([literal("a"), literal("b")]).run("b")
+
+		XCTAssertNotNil(result.match)
+		XCTAssertTrue(result.rest.isEmpty)
+	}
+
+	func testOneOfFailsIfNoneMatches() {
+		let result = oneOf([literal("a"), literal("b")]).run("c")
+
+		XCTAssertNil(result.match)
+		XCTAssertEqual(result.rest, "c")
 	}
 }

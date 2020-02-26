@@ -27,6 +27,17 @@ let int = Parser<Int> { str in
   return match
 }
 
+func oneOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
+	Parser<A> { str -> A? in
+		for p in ps {
+			if let match = p.run(&str) {
+				return match
+			}
+		}
+		return nil
+	}
+}
+
 extension Parser {
 	func map<B>(_ f: @escaping (A) -> B) -> Parser<B> {
 		Parser<B> { str -> B? in
