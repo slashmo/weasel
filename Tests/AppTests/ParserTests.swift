@@ -101,4 +101,22 @@ final class ParserTests: XCTestCase {
 		XCTAssertEqual(match?.2, 2)
 		XCTAssertTrue(rest.isEmpty)
 	}
+
+	func testZipFiveParsers() {
+		let (match, rest) = zip(int, literal(","), int, literal("|"), int).run("1,2|1")
+
+		XCTAssertEqual(match?.0, 1)
+		XCTAssertEqual(match?.2, 2)
+		XCTAssertEqual(match?.4, 1)
+		XCTAssertTrue(rest.isEmpty)
+	}
+
+	func testZipSixParsers() {
+		let (match, rest) = zip(int, literal(","), int, literal("|"), int, literal("A")).run("1,2|1A")
+
+		XCTAssertEqual(match?.0, 1)
+		XCTAssertEqual(match?.2, 2)
+		XCTAssertEqual(match?.4, 1)
+		XCTAssertTrue(rest.isEmpty)
+	}
 }

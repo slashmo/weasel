@@ -70,6 +70,29 @@ func zip<A, B, C, D>(
 		.map { a, bcd in (a, bcd.0, bcd.1, bcd.2) }
 }
 
+func zip<A, B, C, D, E>(
+	_ a: Parser<A>,
+	_ b: Parser<B>,
+	_ c: Parser<C>,
+	_ d: Parser<D>,
+	_ e: Parser<E>
+) -> Parser<(A, B, C, D, E)> {
+	zip(a, zip(b, c, d, e))
+		.map { a, bcde in (a, bcde.0, bcde.1, bcde.2, bcde.3) }
+}
+
+func zip<A, B, C, D, E, F>(
+	_ a: Parser<A>,
+	_ b: Parser<B>,
+	_ c: Parser<C>,
+	_ d: Parser<D>,
+	_ e: Parser<E>,
+	_ f: Parser<F>
+) -> Parser<(A, B, C, D, E, F)> {
+	zip(a, zip(b, c, d, e, f))
+		.map { a, bcdef in (a, bcdef.0, bcdef.1, bcdef.2, bcdef.3, bcdef.4) }
+}
+
 let int = Parser<Int> { str in
 	let prefix = str.prefix(while: { $0.isNumber })
   let match = Int(prefix)
@@ -78,6 +101,7 @@ let int = Parser<Int> { str in
 }
 
 let space = literal(" ")
+let crlf = literal("\r\n")
 
 extension Parser {
 	func map<B>(_ f: @escaping (A) -> B) -> Parser<B> {
