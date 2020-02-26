@@ -119,4 +119,32 @@ final class ParserTests: XCTestCase {
 		XCTAssertEqual(match?.4, 1)
 		XCTAssertTrue(rest.isEmpty)
 	}
+
+	func testZeroOrMoreParsesTwoLiteralsSeparatedByAComma() {
+		let result = zeroOrMore(literal("a"), separatedBy: literal(",")).run("a,ab")
+
+		XCTAssertEqual(result.match?.count, 2)
+		XCTAssertEqual(result.rest, "b")
+	}
+
+	func testZeroOrMoreIsSuccessfulWithZeroMatches() {
+		let result = zeroOrMore(literal("a"), separatedBy: literal(";")).run("b;b")
+
+		XCTAssertEqual(result.match?.isEmpty, true)
+		XCTAssertEqual(result.rest, "b;b")
+	}
+
+	func testZeroOrMoreSpacesRemovesSpaces() {
+		let result = zeroOrMoreSpaces.run("   ")
+
+		XCTAssertNotNil(result.match)
+		XCTAssertTrue(result.rest.isEmpty)
+	}
+
+	func testZeroOrMoreSpacesIsSuccessfulWithZeroMatches() {
+		let result = zeroOrMoreSpaces.run("abc")
+
+		XCTAssertNotNil(result.match)
+		XCTAssertEqual(result.rest, "abc")
+	}
 }

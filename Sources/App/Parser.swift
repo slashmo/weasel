@@ -93,15 +93,33 @@ func zip<A, B, C, D, E, F>(
 		.map { a, bcdef in (a, bcdef.0, bcdef.1, bcdef.2, bcdef.3, bcdef.4) }
 }
 
+func zeroOrMore<A>(_ p: Parser<A>, separatedBy s: Parser<Void>) -> Parser<[A]> {
+	Parser<[A]> { str in
+		var rest = str
+		var matches = [A]()
+		while let match = p.run(&str) {
+			rest = str
+			matches.append(match)
+			if s.run(&str) == nil {
+				return matches
+			}
+		}
+		str = rest
+		return matches
+	}
+}
+
+let zeroOrMoreSpaces = prefix(while: { $0 == " " }).map { _ in () }
+
+let space = literal(" ")
+let crlf = literal("\r\n")
+
 let int = Parser<Int> { str in
 	let prefix = str.prefix(while: { $0.isNumber })
   let match = Int(prefix)
   str.removeFirst(prefix.count)
   return match
 }
-
-let space = literal(" ")
-let crlf = literal("\r\n")
 
 extension Parser {
 	func map<B>(_ f: @escaping (A) -> B) -> Parser<B> {
