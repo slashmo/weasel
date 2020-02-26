@@ -20,11 +20,12 @@ func literal(_ p: String) -> Parser<Void> {
 	}
 }
 
-let int = Parser<Int> { str in
-	let prefix = str.prefix(while: { $0.isNumber })
-  let match = Int(prefix)
-  str.removeFirst(prefix.count)
-  return match
+func prefix(while p: @escaping (Character) -> Bool) -> Parser<Substring> {
+  Parser<Substring> { str in
+    let prefix = str.prefix(while: p)
+    str.removeFirst(prefix.count)
+    return prefix
+  }
 }
 
 func oneOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
@@ -36,6 +37,13 @@ func oneOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
 		}
 		return nil
 	}
+}
+
+let int = Parser<Int> { str in
+	let prefix = str.prefix(while: { $0.isNumber })
+  let match = Int(prefix)
+  str.removeFirst(prefix.count)
+  return match
 }
 
 extension Parser {

@@ -57,4 +57,11 @@ final class ParserTests: XCTestCase {
 		XCTAssertNil(result.match)
 		XCTAssertEqual(result.rest, "c")
 	}
+
+	func testPrefixReturnsAllCharactersMatchingTheClosure() {
+		let (match, rest) = prefix(while: { !$0.isWhitespace }).run("Hello, Weasel!")
+
+		XCTAssertEqual(match, "Hello,")
+		XCTAssertEqual(rest, " Weasel!")
+	}
 }
