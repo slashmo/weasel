@@ -39,12 +39,45 @@ func oneOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
 	}
 }
 
+func zip<A, B>(_ a: Parser<A>, _ b: Parser<B>) -> Parser<(A, B)> {
+	Parser<(A, B)> { str -> (A, B)? in
+		let original = str
+		guard let matchA = a.run(&str) else { return nil }
+		guard let matchB = b.run(&str) else {
+			str = original
+			return nil
+		}
+		return (matchA, matchB)
+	}
+}
+
+func zip<A, B, C>(
+	_ a: Parser<A>,
+	_ b: Parser<B>,
+	_ c: Parser<C>
+) -> Parser<(A, B, C)> {
+	zip(a, zip(b, c))
+		.map { a, bc in (a, bc.0, bc.1) }
+}
+
+func zip<A, B, C, D>(
+	_ a: Parser<A>,
+	_ b: Parser<B>,
+	_ c: Parser<C>,
+	_ d: Parser<D>
+) -> Parser<(A, B, C, D)> {
+	zip(a, zip(b, c, d))
+		.map { a, bcd in (a, bcd.0, bcd.1, bcd.2) }
+}
+
 let int = Parser<Int> { str in
 	let prefix = str.prefix(while: { $0.isNumber })
   let match = Int(prefix)
   str.removeFirst(prefix.count)
   return match
 }
+
+let space = literal(" ")
 
 extension Parser {
 	func map<B>(_ f: @escaping (A) -> B) -> Parser<B> {

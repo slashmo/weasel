@@ -64,4 +64,41 @@ final class ParserTests: XCTestCase {
 		XCTAssertEqual(match, "Hello,")
 		XCTAssertEqual(rest, " Weasel!")
 	}
+
+	func testZipChainsMultipleParsers() {
+		let (match, rest) = zip(int, literal("a")).run("1a")
+
+		XCTAssertEqual(match?.0, 1)
+		XCTAssertTrue(rest.isEmpty)
+	}
+
+	func testZipFailsTheWholeChainWhenTheFirstParserFails() {
+		let (match, rest) = zip(int, literal("a")).run("aa")
+
+		XCTAssertNil(match)
+		XCTAssertEqual(rest, "aa")
+	}
+
+	func testZipFailsTheWholeChainWhenAChainedParserFails() {
+		let (match, rest) = zip(int, literal("a")).run("1b")
+
+		XCTAssertNil(match)
+		XCTAssertEqual(rest, "1b")
+	}
+
+	func testZipThreeParsers() {
+		let (match, rest) = zip(int, literal(","), int).run("1,2")
+
+		XCTAssertEqual(match?.0, 1)
+		XCTAssertEqual(match?.2, 2)
+		XCTAssertTrue(rest.isEmpty)
+	}
+
+	func testZipFourParsers() {
+		let (match, rest) = zip(int, literal(","), int, literal("|")).run("1,2|")
+
+		XCTAssertEqual(match?.0, 1)
+		XCTAssertEqual(match?.2, 2)
+		XCTAssertTrue(rest.isEmpty)
+	}
 }
