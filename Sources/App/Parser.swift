@@ -3,13 +3,13 @@ public struct Parser<A> {
 }
 
 extension Parser {
-  static var never: Parser {
-    return Parser { _ in nil }
-  }
+	static var never: Parser {
+		Parser { _ in nil }
+	}
 }
 
 func always<A>(_ a: A) -> Parser<A> {
-  return Parser<A> { _ in a }
+	Parser<A> { _ in a }
 }
 
 func literal(_ p: String) -> Parser<Void> {
@@ -21,11 +21,11 @@ func literal(_ p: String) -> Parser<Void> {
 }
 
 func prefix(while p: @escaping (Character) -> Bool) -> Parser<Substring> {
-  Parser<Substring> { str in
-    let prefix = str.prefix(while: p)
-    str.removeFirst(prefix.count)
-    return prefix
-  }
+	Parser<Substring> { str in
+		let prefix = str.prefix(while: p)
+		str.removeFirst(prefix.count)
+		return prefix
+	}
 }
 
 func oneOf<A>(_ ps: [Parser<A>]) -> Parser<A> {
@@ -116,9 +116,9 @@ let crlf = literal("\r\n")
 
 let int = Parser<Int> { str in
 	let prefix = str.prefix(while: { $0.isNumber })
-  let match = Int(prefix)
-  str.removeFirst(prefix.count)
-  return match
+	let match = Int(prefix)
+	str.removeFirst(prefix.count)
+	return match
 }
 
 extension Parser {
@@ -129,23 +129,23 @@ extension Parser {
 	}
 
 	func flatMap<B>(_ f: @escaping (A) -> Parser<B>) -> Parser<B> {
-    Parser<B> { str -> B? in
-      let original = str
-      let matchA = self.run(&str)
-      let parserB = matchA.map(f)
-      guard let matchB = parserB?.run(&str) else {
-        str = original
-        return nil
-      }
-      return matchB
-    }
-  }
+		Parser<B> { str -> B? in
+			let original = str
+			let matchA = self.run(&str)
+			let parserB = matchA.map(f)
+			guard let matchB = parserB?.run(&str) else {
+				str = original
+				return nil
+			}
+			return matchB
+		}
+	}
 }
 
 extension Parser {
-  public func run(_ str: String) -> (match: A?, rest: Substring) {
-    var str = str[...]
-    let match = self.run(&str)
-    return (match, str)
-  }
+	public func run(_ str: String) -> (match: A?, rest: Substring) {
+		var str = str[...]
+		let match = run(&str)
+		return (match, str)
+	}
 }
