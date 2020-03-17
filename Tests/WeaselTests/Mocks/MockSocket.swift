@@ -2,11 +2,17 @@ import Foundation
 import Weasel
 
 final class MockSocket: SocketProtocol {
+	private(set) var isOpen = true
+
 	var bytesToRead: [UInt8]
 	var bytesWritten = [UInt8]()
 
 	init(bytesToRead: [UInt8] = []) {
 		self.bytesToRead = bytesToRead
+	}
+
+	func close() throws {
+		isOpen = false
 	}
 
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {

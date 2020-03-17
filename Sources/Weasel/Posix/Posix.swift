@@ -10,6 +10,8 @@ private let sysGetsockopt: (
 private let sysInet_ntop: (
 	CInt, UnsafeRawPointer?, UnsafeMutablePointer<CChar>?, socklen_t
 ) -> UnsafePointer<CChar>? = inet_ntop
+private let sysRead = read
+private let sysWrite = write
 
 enum Posix {
 	#if os(Linux)
@@ -70,6 +72,18 @@ enum Posix {
 	) throws -> UnsafePointer<CChar> {
 		try wrapErrorIsNullReturnCall {
 			sysInet_ntop(addressFamily, addressBytes, addressDescription, addressDescriptionLength)
+		}
+	}
+
+	static func read(descriptor: CInt, pointer: UnsafeMutableRawPointer, size: size_t) throws -> Int {
+		try wrapSysCall {
+			sysRead(descriptor, pointer, size)
+		}
+	}
+
+	static func write(descriptor: CInt, pointer: UnsafeRawPointer, size: Int) throws -> Int {
+		try wrapSysCall {
+			sysWrite(descriptor, pointer, size)
 		}
 	}
 }
