@@ -13,16 +13,16 @@ final class MockSocket: SocketProtocol {
 		self.bytesToRead = bytesToRead
 	}
 
-	func close() throws {
-		isOpen = false
-	}
-
 	func bind(to address: SocketAddress) throws {
 		boundAddress = address
 	}
 
 	func listen(backlog: CInt) throws {
 		listenBacklog = backlog
+	}
+
+	func accept() throws -> SocketProtocol? {
+		nil
 	}
 
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
@@ -36,5 +36,9 @@ final class MockSocket: SocketProtocol {
 	func write(pointer: UnsafeRawBufferPointer) throws -> Int {
 		bytesWritten = [UInt8](pointer)
 		return pointer.count
+	}
+
+	func close() throws {
+		isOpen = false
 	}
 }

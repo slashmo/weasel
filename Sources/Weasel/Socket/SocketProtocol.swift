@@ -1,13 +1,14 @@
 public protocol SocketProtocol {
 	var isOpen: Bool { get }
-	func close() throws
 	func bind(to address: SocketAddress) throws
 	func listen(backlog: CInt) throws
+	func accept() throws -> SocketProtocol?
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int
 	func write(pointer: UnsafeRawBufferPointer) throws -> Int
+	func close() throws
 }
 
-extension SocketProtocol {
+public extension SocketProtocol {
 	func readBytes(inChunksOf chunkSize: Int = 128 * 1024) throws -> [UInt8] {
 		var bytes = [UInt8]()
 		var readerIndex = 0

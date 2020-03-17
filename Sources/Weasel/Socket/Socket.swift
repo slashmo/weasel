@@ -16,13 +16,6 @@ public final class Socket: SocketProtocol {
 		assert(!isOpen, "Socket was not closed!")
 	}
 
-	public func close() throws {
-		try withUnsafeDescriptor { d in
-			descriptor = -1
-			try Posix.close(descriptor: d)
-		}
-	}
-
 	public func bind(to address: SocketAddress) throws {
 		try withUnsafeDescriptor { d in
 			try address.withSockAddr { try Posix.bind(descriptor: descriptor, ptr: $0, bytes: $1) }
@@ -35,6 +28,12 @@ public final class Socket: SocketProtocol {
 		}
 	}
 
+	public func accept() throws -> SocketProtocol? {
+		try withUnsafeDescriptor {
+			try Posix.accept(descriptor: $0, addr: nil, len: nil).map(Socket.init)
+		}
+	}
+
 	public func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
 		try withUnsafeDescriptor { d in
 			try Posix.read(descriptor: d, pointer: pointer.baseAddress!, size: pointer.count)
@@ -44,6 +43,13 @@ public final class Socket: SocketProtocol {
 	public func write(pointer: UnsafeRawBufferPointer) throws -> Int {
 		try withUnsafeDescriptor { d in
 			try Posix.write(descriptor: d, pointer: pointer.baseAddress!, size: pointer.count)
+		}
+	}
+
+	public func close() throws {
+		try withUnsafeDescriptor { d in
+			descriptor = -1
+			try Posix.close(descriptor: d)
 		}
 	}
 
