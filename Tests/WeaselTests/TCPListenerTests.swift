@@ -22,7 +22,7 @@ final class TCPListenerTests: XCTestCase {
 	func testItClosesTheSocketUponBindFailure() throws {
 		let socket = MockSocket()
 		socket.simulatesBindFailure = true
-		XCTAssertThrowsError(try TCPListener.bound(to: address, makeSocket: { _ in socket })) { error in
+		XCTAssertThrowsError(try TCPListener.bound(to: address, makeSocket: { _ in socket })) { _ in
 			XCTAssertFalse(socket.isOpen)
 		}
 	}
