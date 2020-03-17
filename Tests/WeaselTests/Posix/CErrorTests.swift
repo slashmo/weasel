@@ -1,5 +1,5 @@
-import Weasel
 import Foundation
+import Weasel
 import XCTest
 
 final class CErrorTests: XCTestCase {

@@ -25,7 +25,7 @@ enum Posix {
 		}
 	}
 
-	static func socket(domain: CInt, type: CInt, `protocol`: CInt) throws -> CInt {
+	static func socket(domain: CInt, type: CInt, protocol: CInt) throws -> CInt {
 		try wrapSysCall {
 			sysSocket(domain, type, `protocol`)
 		}

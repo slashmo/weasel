@@ -1,5 +1,5 @@
-import Logging
 import Foundation
+import Logging
 
 public final class TCPListener {
 	private let address: String
