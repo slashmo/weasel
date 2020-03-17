@@ -29,6 +29,12 @@ public final class Socket: SocketProtocol {
 		}
 	}
 
+	public func listen(backlog: CInt) throws {
+		try withUnsafeDescriptor { d in
+			try Posix.listen(descriptor: d, backlog: backlog)
+		}
+	}
+
 	public func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
 		try withUnsafeDescriptor { d in
 			try Posix.read(descriptor: d, pointer: pointer.baseAddress!, size: pointer.count)

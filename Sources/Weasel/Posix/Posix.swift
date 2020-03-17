@@ -10,6 +10,7 @@ private let sysGetsockopt: (
 private let sysInet_ntop: (
 	CInt, UnsafeRawPointer?, UnsafeMutablePointer<CChar>?, socklen_t
 ) -> UnsafePointer<CChar>? = inet_ntop
+private let sysListen = listen
 private let sysRead = read
 private let sysWrite = write
 
@@ -60,6 +61,12 @@ enum Posix {
 	static func bind(descriptor: CInt, ptr: UnsafePointer<sockaddr>, bytes: Int) throws {
 		try wrapSysCall {
 			sysBind(descriptor, ptr, socklen_t(bytes))
+		}
+	}
+
+	static func listen(descriptor: CInt, backlog: CInt) throws {
+		try wrapSysCall {
+			sysListen(descriptor, backlog)
 		}
 	}
 

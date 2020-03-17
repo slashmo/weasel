@@ -4,6 +4,7 @@ import Weasel
 final class MockSocket: SocketProtocol {
 	private(set) var isOpen = true
 	private(set) var boundAddress: SocketAddress?
+	private(set) var listenBacklog: CInt?
 
 	var bytesToRead: [UInt8]
 	var bytesWritten = [UInt8]()
@@ -18,6 +19,10 @@ final class MockSocket: SocketProtocol {
 
 	func bind(to address: SocketAddress) throws {
 		boundAddress = address
+	}
+
+	func listen(backlog: CInt) throws {
+		listenBacklog = backlog
 	}
 
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
