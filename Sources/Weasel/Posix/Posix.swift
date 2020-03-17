@@ -7,6 +7,9 @@ private let sysSetsockopt: (CInt, CInt, CInt, UnsafeRawPointer?, socklen_t) -> C
 private let sysGetsockopt: (
 	CInt, CInt, CInt, UnsafeMutableRawPointer?, UnsafeMutablePointer<socklen_t>?
 ) -> CInt = getsockopt
+private let sysInet_ntop: (
+	CInt, UnsafeRawPointer?, UnsafeMutablePointer<CChar>?, socklen_t
+) -> UnsafePointer<CChar>? = inet_ntop
 
 enum Posix {
 	#if os(Linux)
@@ -57,6 +60,18 @@ enum Posix {
 			sysBind(descriptor, ptr, socklen_t(bytes))
 		}
 	}
+
+	@discardableResult
+	static func inet_ntop(
+		addressFamily: CInt,
+		addressBytes: UnsafeRawPointer,
+		addressDescription: UnsafeMutablePointer<CChar>,
+		addressDescriptionLength: socklen_t
+	) throws -> UnsafePointer<CChar> {
+		try wrapErrorIsNullReturnCall {
+			sysInet_ntop(addressFamily, addressBytes, addressDescription, addressDescriptionLength)
+		}
+	}
 }
 
 @discardableResult
@@ -72,6 +87,19 @@ private func wrapSysCall<T: FixedWidthInteger>(
 				continue
 			}
 			throw CError(errnoCode: errno, reason: function)
+		}
+		return res
+	}
+}
+
+private func wrapErrorIsNullReturnCall<T>(where function: String = #function, _ body: () throws -> T?) throws -> T {
+	while true {
+		guard let res = try body() else {
+			let err = errno
+			if err == EINTR {
+				continue
+			}
+			throw CError(errnoCode: err, reason: function)
 		}
 		return res
 	}
