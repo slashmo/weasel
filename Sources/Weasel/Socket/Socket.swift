@@ -16,6 +16,19 @@ public final class Socket: SocketProtocol {
 		assert(!isOpen, "Socket was not closed!")
 	}
 
+	public func setOption<T>(level: CInt, name: CInt, value: T) throws {
+		try withUnsafeDescriptor { d in
+			var val = value
+			try Posix.setsockopt(
+				descriptor: d,
+				level: level,
+				optionName: name,
+				optionValue: &val,
+				optionLen: socklen_t(MemoryLayout.size(ofValue: val))
+			)
+		}
+	}
+
 	public func bind(to address: SocketAddress) throws {
 		try withUnsafeDescriptor { d in
 			try address.withSockAddr { try Posix.bind(descriptor: descriptor, ptr: $0, bytes: $1) }

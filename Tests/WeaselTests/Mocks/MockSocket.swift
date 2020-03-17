@@ -5,12 +5,17 @@ final class MockSocket: SocketProtocol {
 	private(set) var isOpen = true
 	private(set) var boundAddress: SocketAddress?
 	private(set) var listenBacklog: CInt?
+	private(set) var options = [CInt: Any]()
 
 	var bytesToRead: [UInt8]
 	var bytesWritten = [UInt8]()
 
 	init(bytesToRead: [UInt8] = []) {
 		self.bytesToRead = bytesToRead
+	}
+
+	func setOption<T>(level: CInt, name: CInt, value: T) throws {
+		options[name] = value
 	}
 
 	func bind(to address: SocketAddress) throws {

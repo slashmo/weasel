@@ -1,5 +1,7 @@
 public protocol SocketProtocol {
 	var isOpen: Bool { get }
+
+	func setOption<T>(level: CInt, name: CInt, value: T) throws
 	func bind(to address: SocketAddress) throws
 	func listen(backlog: CInt) throws
 	func accept() throws -> SocketProtocol?
