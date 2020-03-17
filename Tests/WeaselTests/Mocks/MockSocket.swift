@@ -11,6 +11,7 @@ final class MockSocket: SocketProtocol {
 	var clientsToAccept: [MockSocket]
 	var bytesWritten = [UInt8]()
 	var simulatesBindFailure = false
+	var simulatesReadFailure = false
 
 	init(bytesToRead: [UInt8] = [], clientsToAccept: [MockSocket] = []) {
 		self.bytesToRead = bytesToRead
@@ -37,6 +38,9 @@ final class MockSocket: SocketProtocol {
 	}
 
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
+		guard !simulatesReadFailure else {
+			throw CError(errnoCode: SIGPIPE, reason: #function)
+		}
 		guard !bytesToRead.isEmpty else { return 0 }
 		let bytes = bytesToRead[0 ..< min(pointer.count, bytesToRead.endIndex)]
 		bytesToRead.removeFirst(min(pointer.count, bytesToRead.endIndex))

@@ -1,7 +1,7 @@
 /// The version of the HTTP protocol being used.
 ///
 /// - seealso: [HTTP versioning](https://www.ietf.org/rfc/rfc7230.html#section-2.6)
-public struct HTTPVersion {
+public struct HTTPVersion: Equatable {
 	public let major: Int
 	public let minor: Int
 }

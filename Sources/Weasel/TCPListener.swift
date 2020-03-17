@@ -8,7 +8,7 @@ protocol TCPListenerDelegate: AnyObject {
 public final class TCPListener {
 	weak var delegate: TCPListenerDelegate?
 
-	private let address: SocketAddress
+	let address: SocketAddress
 	private let socket: SocketProtocol
 	private let logger = Logger(label: "codes.slashmo.weasel.TCPListener")
 	private let shutdownNotifier: ShutdownNotifier
