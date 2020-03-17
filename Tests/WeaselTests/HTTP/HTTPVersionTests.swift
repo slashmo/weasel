@@ -1,4 +1,4 @@
-import App
+import Weasel
 import XCTest
 
 final class HTTPVersionTests: XCTestCase {

@@ -3,12 +3,15 @@ import PackageDescription
 
 let package = Package(
 	name: "weasel",
+	products: [
+		.library(name: "Weasel", targets: ["Weasel"])
+	],
 	dependencies: [
 		.package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.2.0"))
 	],
 	targets: [
-		.target(name: "App", dependencies: ["Logging"]),
-		.target(name: "Run", dependencies: ["App", "Logging"]),
-		.testTarget(name: "AppTests", dependencies: ["App"])
+		.target(name: "Weasel", dependencies: ["Logging"]),
+		.target(name: "Example", dependencies: ["Weasel", "Logging"]),
+		.testTarget(name: "WeaselTests", dependencies: ["Weasel"])
 	]
 )

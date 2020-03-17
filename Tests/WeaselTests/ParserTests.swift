@@ -1,4 +1,4 @@
-@testable import App
+@testable import Weasel
 import XCTest
 
 final class ParserTests: XCTestCase {

@@ -1,4 +1,4 @@
-import App
+import Weasel
 import Foundation
 import XCTest
 
