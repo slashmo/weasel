@@ -8,10 +8,13 @@ final class MockSocket: SocketProtocol {
 	private(set) var options = [CInt: Any]()
 
 	var bytesToRead: [UInt8]
+	var clientsToAccept: [MockSocket]
 	var bytesWritten = [UInt8]()
+	var simulatesBindFailure = false
 
-	init(bytesToRead: [UInt8] = []) {
+	init(bytesToRead: [UInt8] = [], clientsToAccept: [MockSocket] = []) {
 		self.bytesToRead = bytesToRead
+		self.clientsToAccept = clientsToAccept
 	}
 
 	func setOption<T>(level: CInt, name: CInt, value: T) throws {
@@ -19,6 +22,9 @@ final class MockSocket: SocketProtocol {
 	}
 
 	func bind(to address: SocketAddress) throws {
+		guard !simulatesBindFailure else {
+			throw CError(errnoCode: EADDRINUSE, reason: #function)
+		}
 		boundAddress = address
 	}
 
@@ -27,7 +33,7 @@ final class MockSocket: SocketProtocol {
 	}
 
 	func accept() throws -> SocketProtocol? {
-		nil
+		clientsToAccept.isEmpty ? nil : clientsToAccept.removeFirst()
 	}
 
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int {
