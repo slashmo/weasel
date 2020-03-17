@@ -25,24 +25,32 @@ extension HTTPServer: TCPListenerDelegate {
 			let requestString = String(cString: try client.readBytes())
 
 			guard let requestHead = zip(httpRequestLine, httpHeaders).run(requestString).match else {
-				logger.error("Abort 400: Bad Request")
-				_ = try client.writeString("HTTP/1.1 400 Bad Request\r\n")
+				var response = HTTPResponse(status: .badRequest)
+				response.body = HTTPResponse.Body(response.status.reason)
+				logger.error("Abort \(response.status.code): \(response.status.reason)")
+				_ = try client.writeString(response.description)
 				return
 			}
 
 			guard requestHead.0.version == HTTPVersion(major: 1, minor: 1) else {
-				logger.error("Abort 505: HTTP Version Not Supported")
-				_ = try client.writeString("HTTP/1.1 505 HTTP Version Not Supported\r\n")
+				var response = HTTPResponse(status: .httpVersionNotSupported)
+				response.body = HTTPResponse.Body(response.status.reason)
+				logger.error("Abort \(response.status.code): \(response.status.reason)")
+				_ = try client.writeString(response.description)
 				return
 			}
 
 			logger.info("\(requestHead.0.method.rawValue) \(requestHead.0.path)")
 
-			let response = "HTTP/1.1 200 OK\r\n"
-			_ = try client.writeString(response)
+			let response = HTTPResponse(status: .ok, body: "Hello, Weasel!")
+			_ = try client.writeString(response.description)
 		} catch {
-			logger.error("Abort 500: Internal Server Error", metadata: ["error": "\(error.localizedDescription)"])
-			_ = try? client.writeString("HTTP/1.1 500 Internal Server Error\r\n")
+			let response = HTTPResponse(status: .internalServerError)
+			logger.error(
+				"Abort \(response.status.code): \(response.status.reason)",
+				metadata: ["error": "\(error.localizedDescription)"]
+			)
+			_ = try? client.writeString(response.description)
 		}
 	}
 }
