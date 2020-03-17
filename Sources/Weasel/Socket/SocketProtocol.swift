@@ -1,6 +1,7 @@
 public protocol SocketProtocol {
 	var isOpen: Bool { get }
 	func close() throws
+	func bind(to address: SocketAddress) throws
 	func read(pointer: UnsafeMutableRawBufferPointer) throws -> Int
 	func write(pointer: UnsafeRawBufferPointer) throws -> Int
 }
