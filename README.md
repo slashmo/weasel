@@ -1,6 +1,6 @@
 # Weasel HTTP Server
 
-![Continuous Integration](https://github.com/slashmo/weasel/workflows/Continuous%20Integration/badge.svg)
+[![Continuous Integration](https://github.com/slashmo/weasel/workflows/Continuous%20Integration/badge.svg)](https://github.com/slashmo/weasel/actions?query=workflow%3A%22Continuous+Integration%22)
 
 ## Do not use in production
 
