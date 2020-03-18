@@ -247,15 +247,15 @@ public extension HTTPResponse {
 		private let storage: Storage
 
 		public init(_ string: String) {
-			self.storage = .string(string)
+			storage = .string(string)
 		}
 
 		public init(_ data: Data) {
-			self.storage = .data(data)
+			storage = .data(data)
 		}
 
 		public init() {
-			self.storage = .none
+			storage = .none
 		}
 
 		public var count: Int {
