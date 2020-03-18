@@ -1,27 +1,23 @@
 name: Continuous Integration
 on: push
 jobs:
-  test:
-    name: Test
+  test-ubuntu:
+    name: Test (Ubuntu)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Cache Swift
-        id: swift-cache
-        uses: actions/cache@v1
-        env:
-          cache-name: cache-swift
-        with:
-          path: ~/.swiftenv
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('.swift-version') }}
-          restore-keys:
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-      - name: Install & link Swift
-        if: steps.swift-cache.outputs.cache-hit != 'true'
-        run: |
-          rm -rf ~/.swiftenv
-          eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
-      - name: Test
-        run: |
-          $HOME/.swiftenv/shims/swift test --parallel --enable-test-discovery
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Test
+      run: |
+        docker build --file Dockerfile.testing --tag weasel-testing .
+        docker run --rm weasel-testing
+  test-macos:
+    name: Test (macOS)
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Test
+      run: |
+        swift package resolve
+        swift test --parallel

@@ -1,4 +1,4 @@
-@testable import App
+@testable import Weasel
 import XCTest
 
 final class HTTPHeaderTest: XCTestCase {
@@ -43,10 +43,15 @@ final class HTTPHeaderTest: XCTestCase {
 		"""
 		let (match, rest) = httpHeaders.run(headers)
 
-		XCTAssertEqual(match?.count, 3)
-		XCTAssertEqual(match?.first(where: { $0.0 == "Host" })?.1, "localhost")
-		XCTAssertEqual(match?.first(where: { $0.0 == "DNT" })?.1, "1")
-		XCTAssertEqual(match?.first(where: { $0.0 == "Connection" })?.1, "keep-alive")
+		XCTAssertEqual(match, HTTPHeaders([
+			("Host", "localhost"),
+			("DNT", "1"),
+			("Connection", "keep-alive")
+		]))
+
+		XCTAssertEqual(match?["Host"], ["localhost"])
+		XCTAssertEqual(match?["DNT"], ["1"])
+		XCTAssertEqual(match?["Connection"], ["keep-alive"])
 		XCTAssertTrue(rest.isEmpty)
 	}
 
@@ -58,11 +63,12 @@ final class HTTPHeaderTest: XCTestCase {
 		"""
 		let (match, rest) = httpHeaders.run(headers)
 
-		XCTAssertEqual(match?.count, 3)
-		XCTAssertEqual(match?.first?.0, "Cache-Control")
-		XCTAssertEqual(match?.first?.1, "no-cache")
-		XCTAssertEqual(match?.last?.0, "Cache-Control")
-		XCTAssertEqual(match?.last?.1, "no-store")
+		XCTAssertEqual(match, HTTPHeaders([
+			("Cache-Control", "no-cache"),
+			("Accept-Encoding", "gzip, deflate"),
+			("Cache-Control", "no-store")
+		]))
+		XCTAssertEqual(match?["Cache-Control"], ["no-cache", "no-store"])
 		XCTAssertTrue(rest.isEmpty)
 	}
 }

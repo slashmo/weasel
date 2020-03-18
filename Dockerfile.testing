@@ -1,0 +1,12 @@
+FROM swift:5.1
+
+WORKDIR /app
+
+COPY Package.swift .
+COPY Package.resolved .
+RUN swift package resolve
+
+COPY Sources Sources
+COPY Tests Tests
+
+CMD swift test --parallel --enable-test-discovery
