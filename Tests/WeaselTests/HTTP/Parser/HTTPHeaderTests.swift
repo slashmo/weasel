@@ -71,4 +71,37 @@ final class HTTPHeaderTest: XCTestCase {
 		XCTAssertEqual(match?["Cache-Control"], ["no-cache", "no-store"])
 		XCTAssertTrue(rest.isEmpty)
 	}
+
+	func testEquatableConformance() {
+		XCTAssertEqual(
+			HTTPHeaders([("Authorization", "Bearer xyz")]),
+			HTTPHeaders([("Authorization", "Bearer xyz")])
+		)
+		XCTAssertEqual(
+			HTTPHeaders([("Host", "localhost"), ("Connection", "keep-alive")]),
+			HTTPHeaders([("Host", "localhost"), ("Connection", "keep-alive")])
+		)
+
+		XCTAssertNotEqual(HTTPHeaders(), HTTPHeaders([("Authorization", "Bearer xyz")]))
+		XCTAssertNotEqual(
+			HTTPHeaders([("Authorization", "Bearer xyz")]),
+			HTTPHeaders([("Cache-Control", "keep-alive")])
+		)
+		XCTAssertNotEqual(
+			HTTPHeaders([("Authorization", "Bearer abc")]),
+			HTTPHeaders([("Authorization", "Bearer xyz")])
+		)
+	}
+
+	func testRemoveRemovesAllAccurancesOfAHeaderName() {
+		var headers = HTTPHeaders([
+			("Authorization", "Bearer xyz"),
+			("Cache-Control", "no-cache"),
+			("Cache-Control", "no-store")
+		])
+
+		headers.remove(name: "Cache-Control")
+
+		XCTAssertEqual(headers, ["Authorization": "Bearer xyz"])
+	}
 }
