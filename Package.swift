@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.2
 import PackageDescription
 
 let package = Package(
@@ -10,8 +10,13 @@ let package = Package(
 		.package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.2.0"))
 	],
 	targets: [
-		.target(name: "Weasel", dependencies: ["Logging"]),
-		.target(name: "Example", dependencies: ["Weasel", "Logging"]),
+		.target(name: "Weasel", dependencies: [
+			.product(name: "Logging", package: "swift-log")
+		]),
+		.target(name: "Example", dependencies: [
+			"Weasel",
+			.product(name: "Logging", package: "swift-log")
+		]),
 		.testTarget(name: "WeaselTests", dependencies: ["Weasel"])
 	]
 )

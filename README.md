@@ -1,5 +1,6 @@
 # Weasel HTTP Server
 
+[![Swift 5.2](https://img.shields.io/badge/swift-5.2-ED523F.svg?style=flat)](https://swift.org/download/)
 [![Continuous Integration](https://github.com/slashmo/weasel/workflows/Continuous%20Integration/badge.svg)](https://github.com/slashmo/weasel/actions?query=workflow%3A%22Continuous+Integration%22)
 
 ## Do not use in production

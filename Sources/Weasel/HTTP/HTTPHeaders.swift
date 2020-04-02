@@ -30,7 +30,7 @@ public struct HTTPHeaders: Equatable {
 	public static func == (lhs: HTTPHeaders, rhs: HTTPHeaders) -> Bool {
 		guard lhs.storage.count == rhs.storage.count else { return false }
 		let lhsNames = Set(lhs.storage.map { $0.0.lowercased() })
-		let rhsNames = Set(lhs.storage.map { $0.0.lowercased() })
+		let rhsNames = Set(rhs.storage.map { $0.0.lowercased() })
 		guard lhsNames == rhsNames else { return false }
 
 		for name in lhsNames {
