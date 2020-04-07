@@ -3,9 +3,11 @@ import Logging
 public final class HTTPServer {
 	private let logger = Logger(label: "codes.slashmo.weasel.HTTPServer")
 	private let tcpListener: TCPListener
+	private let responder: HTTPResponder
 
-	public init(tcpListener: TCPListener) {
+	public init(tcpListener: TCPListener, responder: HTTPResponder = DefaultHTTPResponder()) {
 		self.tcpListener = tcpListener
+		self.responder = responder
 		tcpListener.delegate = self
 	}
 
@@ -28,7 +30,7 @@ extension HTTPServer: TCPListenerDelegate {
 				var response = HTTPResponse(status: .badRequest)
 				response.body = HTTPResponse.Body(response.status.reason)
 				logger.error("Abort \(response.status.code): \(response.status.reason)")
-				_ = try client.writeString(response.description)
+				try client.writeString(String(describing: response))
 				return
 			}
 
@@ -36,21 +38,22 @@ extension HTTPServer: TCPListenerDelegate {
 				var response = HTTPResponse(status: .httpVersionNotSupported)
 				response.body = HTTPResponse.Body(response.status.reason)
 				logger.error("Abort \(response.status.code): \(response.status.reason)")
-				_ = try client.writeString(response.description)
+				try client.writeString(String(describing: response))
 				return
 			}
 
-			logger.info("\(requestHead.0.method.rawValue) \(requestHead.0.path)")
-
-			let response = HTTPResponse(status: .ok, body: "Hello, Weasel!")
-			_ = try client.writeString(response.description)
+			responder.respond(to: HTTPRequest()).observe { result in
+				if let response = try? result.get() {
+					_ = try? client.writeString(String(describing: response))
+				}
+			}
 		} catch {
 			let response = HTTPResponse(status: .internalServerError)
 			logger.error(
 				"Abort \(response.status.code): \(response.status.reason)",
 				metadata: ["error": "\(error.localizedDescription)"]
 			)
-			_ = try? client.writeString(response.description)
+			_ = try? client.writeString(String(describing: response))
 		}
 	}
 }

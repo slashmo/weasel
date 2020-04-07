@@ -6,7 +6,7 @@ public struct HTTPResponse {
 	public var headers: HTTPHeaders
 	public var body: Body {
 		didSet {
-			headers.upsert(name: "Content-Length", value: body.count.description)
+			headers.upsert(name: "Content-Length", value: "\(body.count)")
 		}
 	}
 
@@ -27,8 +27,8 @@ extension HTTPResponse: CustomStringConvertible {
 	public var description: String {
 		"""
 		HTTP/\(version.major).\(version.minor) \(status.code) \(status.reason)\r
-		\(headers.description)
-		\(body.description)
+		\(String(describing: headers))
+		\(String(describing: body))
 		"""
 	}
 }
@@ -283,11 +283,11 @@ extension HTTPResponse.Body: CustomStringConvertible {
 	public var description: String {
 		switch storage {
 		case .none:
-			return "<no body"
+			return ""
 		case let .string(string):
-			return string
+			return string + "\n"
 		case let .data(data):
-			return String(data: data, encoding: .ascii) ?? "n/a"
+			return String(data: data, encoding: .ascii) ?? "n/a" + "\n"
 		}
 	}
 }

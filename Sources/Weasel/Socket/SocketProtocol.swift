@@ -29,6 +29,7 @@ public extension SocketProtocol {
 		return bytes
 	}
 
+	@discardableResult
 	func writeString(_ string: String) throws -> Int {
 		try [UInt8](string.utf8).withUnsafeBytes(write)
 	}
