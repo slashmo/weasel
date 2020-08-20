@@ -1,6 +1,4 @@
---indent tabs
 --enable isEmpty
 --commas inline
 --stripunusedargs closure-only
 --exclude .swiftpm,.build
---tabwidth 2

@@ -1,10 +1,10 @@
 import Foundation
 
 let httpHeader = zip(
-	prefix(while: { $0 != ":" }),
-	literal(":"),
-	zeroOrMoreSpaces,
-	prefix(while: { !$0.isNewline })
+    prefix(while: { $0 != ":" }),
+    literal(":"),
+    zeroOrMoreSpaces,
+    prefix(while: { !$0.isNewline })
 ).map { (String($0.0), String($0.3).trimmingCharacters(in: .whitespaces)) }
 
 /// Parses HTTP headers from a string in order of appearance.
